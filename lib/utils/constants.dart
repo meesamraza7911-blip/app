@@ -143,4 +143,7 @@ class AppConstants {
 }
 
 // Roll number ranges for quick initialization
-const List<int> defaultRollNumbers = List<int>.generate(50, (i) => i + 1);
+final List<int> defaultRollNumbers = List<int>.generate(
+  AppConstants.defaultRollNumberCount,
+  (i) => i + 1,
+);
