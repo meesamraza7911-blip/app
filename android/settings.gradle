@@ -32,8 +32,12 @@ if (pubCache != null) {
 	pluginNames.each { pluginName ->
 		def pluginDir = pubCache.listFiles()?.find { it.name.startsWith(pluginName + '-') }
 		if (pluginDir != null) {
+			// Prefer the plugin's `android` subproject when available
+			def androidSub = new File(pluginDir, 'android')
+			def projectDirToUse = androidSub.exists() ? androidSub : pluginDir
+
 			include ":${pluginName}"
-			project(":${pluginName}").projectDir = pluginDir
+			project(":${pluginName}").projectDir = projectDirToUse
 		} else {
 			println "[settings.gradle] Plugin ${pluginName} not found in pub-cache; skipping."
 		}
