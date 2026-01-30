@@ -6,8 +6,18 @@ project(':app').projectDir = new File(rootProject.projectDir, 'app')
 // pub cache. This helps CI environments (and local builds) locate
 // plugin modules such as url_launcher_android, path_provider_android,
 // image_picker_android, etc., without hardcoding versions.
-def pubCache = new File(rootProject.projectDir, '../.pub-cache/hosted/pub.dev')
-if (pubCache.exists()) {
+// Candidate pub-cache locations: project-relative and user HOME (CI runners)
+def candidates = [
+	new File(rootProject.projectDir, '../.pub-cache/hosted/pub.dev'),
+]
+
+def home = System.getenv('HOME')
+if (home != null) {
+	candidates << new File(home, '.pub-cache/hosted/pub.dev')
+}
+
+def pubCache = candidates.find { it.exists() }
+if (pubCache != null) {
 	def pluginNames = [
 		'permission_handler_android',
 		'flutter_plugin_android_lifecycle',
@@ -29,5 +39,5 @@ if (pubCache.exists()) {
 		}
 	}
 } else {
-	println "[settings.gradle] pub-cache not found at: ${pubCache.absolutePath}"
+	println "[settings.gradle] pub-cache not found in candidates: ${candidates.collect{it.absolutePath}}"
 }
