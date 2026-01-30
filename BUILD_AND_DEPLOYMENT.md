@@ -382,7 +382,7 @@ jobs:
           flutter-version: '3.0.0'
       - run: flutter pub get
       - run: flutter build apk --release
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
           path: build/app/outputs/apk/release/app-release.apk
