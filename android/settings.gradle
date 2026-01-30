@@ -1,3 +1,33 @@
 rootProject.name = 'android'
 include ':app'
 project(':app').projectDir = new File(rootProject.projectDir, 'app')
+
+// Dynamically include Android plugin projects that are stored in the
+// pub cache. This helps CI environments (and local builds) locate
+// plugin modules such as url_launcher_android, path_provider_android,
+// image_picker_android, etc., without hardcoding versions.
+def pubCache = new File(rootProject.projectDir, '../.pub-cache/hosted/pub.dev')
+if (pubCache.exists()) {
+	def pluginNames = [
+		'permission_handler_android',
+		'flutter_plugin_android_lifecycle',
+		'share_plus',
+		'sqflite',
+		'file_picker',
+		'url_launcher_android',
+		'path_provider_android',
+		'image_picker_android'
+	]
+
+	pluginNames.each { pluginName ->
+		def pluginDir = pubCache.listFiles()?.find { it.name.startsWith(pluginName + '-') }
+		if (pluginDir != null) {
+			include ":${pluginName}"
+			project(":${pluginName}").projectDir = pluginDir
+		} else {
+			println "[settings.gradle] Plugin ${pluginName} not found in pub-cache; skipping."
+		}
+	}
+} else {
+	println "[settings.gradle] pub-cache not found at: ${pubCache.absolutePath}"
+}
